@@ -147,17 +147,16 @@ public class Main {
                     // ----- STATUS SECTION -----
                     String newStatus = "";
                     while (true) {
-                        System.out.print("Enter new status (Read / Want to Read / Currently Reading / Owned): ");
+                        System.out.print("Enter new status (Read / Want to Read / Currently Reading): ");
                         newStatus = sc.nextLine().trim();
 
                         if (newStatus.equalsIgnoreCase("Read") ||
                                 newStatus.equalsIgnoreCase("Want to Read") ||
-                                newStatus.equalsIgnoreCase("Currently Reading") ||
-                                newStatus.equalsIgnoreCase("Owned")) {
+                                newStatus.equalsIgnoreCase("Currently Reading")) {
                             b.setStatus(newStatus);
                             break;
                         } else {
-                            System.out.println("Invalid status. Please choose one of: Read, Want to Read, Currently Reading, or Owned.");
+                            System.out.println("Invalid status. Please choose one of: Read, Want to Read, Currently Reading.");
                         }
                     }
 

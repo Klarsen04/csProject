@@ -14,6 +14,11 @@ public class Ebook extends Book {
     public String getDownloadLink() { return downloadLink; }
 
     @Override
+    public String getType() {
+        return "Ebook";
+    }
+
+    @Override
     public String toString() {
         return super.toString() + " (Ebook - " + format + ", Link: " + downloadLink + ")";
     }

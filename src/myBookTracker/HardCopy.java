@@ -15,6 +15,11 @@ public class HardCopy extends Book {
     public boolean isOwned() { return owned; }
 
     @Override
+    public String getType() {
+        return "Hard Copy";
+    }
+
+    @Override
     public String toString() {
         return super.toString() + " (Printed - " + pages + " pages, " + (owned ? "Owned" : "Not Owned") + ")";
     }

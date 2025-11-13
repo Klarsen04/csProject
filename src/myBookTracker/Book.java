@@ -21,6 +21,9 @@ public class Book {
     public String getStatus() { return status; }
     public double getRating() { return rating; }
     public String getReview() { return review; }
+    public String getType() {
+        return "Book";
+    }
 
     public void setStatus(String status) { this.status = status; }
     public void setRating(double rating) { this.rating = rating; }

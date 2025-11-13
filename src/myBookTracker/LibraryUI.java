@@ -1,12 +1,14 @@
 package myBookTracker;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
 public class LibraryUI {
     private Library library;
-    private JTextArea textArea;
+    private JTable table;
+    private DefaultTableModel tableModel;
 
     public LibraryUI() {
         library = new Library();
@@ -16,8 +18,21 @@ public class LibraryUI {
     private void createUI() {
         JFrame frame = new JFrame("📚 My Book Library");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(700, 500);
+        frame.setSize(900, 500);
         frame.setLayout(new BorderLayout());
+
+        // ----- Table setup -----
+        String[] columns = {"Title", "Author", "Type", "Format/Pages/Link", "Status", "Rating"};
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make table read-only
+            }
+        };
+        table = new JTable(tableModel);
+        table.setFillsViewportHeight(true);
+        JScrollPane scrollPane = new JScrollPane(table);
+        frame.add(scrollPane, BorderLayout.CENTER);
 
         // ----- Top panel with buttons -----
         JPanel buttonPanel = new JPanel();
@@ -32,29 +47,23 @@ public class LibraryUI {
         buttonPanel.add(searchButton);
         buttonPanel.add(updateButton);
         buttonPanel.add(sortButton);
-
         frame.add(buttonPanel, BorderLayout.NORTH);
-
-        // ----- Text area to display books -----
-        textArea = new JTextArea();
-        textArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        frame.add(scrollPane, BorderLayout.CENTER);
 
         // ----- Button Actions -----
         addButton.addActionListener(e -> addBookAction());
-        viewButton.addActionListener(e -> viewBooks());
+        viewButton.addActionListener(e -> refreshTable());
         searchButton.addActionListener(e -> searchBook());
         updateButton.addActionListener(e -> updateBook());
         sortButton.addActionListener(e -> {
             library.sortAlphabetically();
-            textArea.append("✅ Library sorted alphabetically.\n");
+            refreshTable();
+            JOptionPane.showMessageDialog(frame, "✅ Library sorted alphabetically.");
         });
 
         frame.setVisible(true);
     }
 
-    // ----- Add Book Action -----
+    // ----- Add Book -----
     private void addBookAction() {
         String[] types = {"Ebook", "Hard Copy", "Misc"};
         String type = (String) JOptionPane.showInputDialog(null, "Select Book Type:", "Add Book",
@@ -112,17 +121,30 @@ public class LibraryUI {
         }
 
         library.addBook(newBook);
-        textArea.append("✅ Book added: " + title + "\n");
+        refreshTable();
+        JOptionPane.showMessageDialog(null, "✅ Book added: " + title);
     }
 
-    // ----- View Books -----
-    private void viewBooks() {
-        textArea.setText("");
+    // ----- Refresh table -----
+    private void refreshTable() {
+        tableModel.setRowCount(0); // clear existing rows
         List<Book> books = library.getBooks();
-        if (books.isEmpty()) {
-            textArea.append("No books in library.\n");
-        } else {
-            for (Book b : books) textArea.append(b.toString() + "\n");
+        for (Book b : books) {
+            String type;
+            if (b instanceof Ebook) type = "Ebook";
+            else if (b instanceof HardCopy) type = "Hard Copy";
+            else type = "Book";
+
+            String extraInfo = "";
+            if (b instanceof Ebook e) {
+                extraInfo = e.getFormat() + ", Link: " + e.getDownloadLink();
+            } else if (b instanceof HardCopy h) {
+                extraInfo = h.getPages() + " pages, Owned: " + h.isOwned();
+            }
+
+            tableModel.addRow(new Object[]{
+                    b.getTitle(), b.getAuthor(), type, extraInfo, b.getStatus(), b.getRating()
+            });
         }
     }
 
@@ -131,9 +153,27 @@ public class LibraryUI {
         String searchTitle = JOptionPane.showInputDialog("Enter Title to Search:");
         if (searchTitle == null) return;
         Book found = library.searchByTitle(searchTitle);
-        textArea.setText("");
-        if (found != null) textArea.append("Found: " + found + "\n");
-        else textArea.append("Book not found.\n");
+        if (found != null) {
+            tableModel.setRowCount(0); // show only the found book
+
+            String type;
+            if (found instanceof Ebook) type = "Ebook";
+            else if (found instanceof HardCopy) type = "Hard Copy";
+            else type = "Book";
+
+            String extraInfo = "";
+            if (found instanceof Ebook e) {
+                extraInfo = e.getFormat() + ", Link: " + e.getDownloadLink();
+            } else if (found instanceof HardCopy h) {
+                extraInfo = h.getPages() + " pages, Owned: " + h.isOwned();
+            }
+
+            tableModel.addRow(new Object[]{
+                    found.getTitle(), found.getAuthor(), type, extraInfo, found.getStatus(), found.getRating()
+            });
+        } else {
+            JOptionPane.showMessageDialog(null, "Book not found.");
+        }
     }
 
     // ----- Update Status / Rating -----
@@ -142,11 +182,11 @@ public class LibraryUI {
         if (title == null) return;
         Book b = library.searchByTitle(title);
         if (b == null) {
-            textArea.append("Book not found.\n");
+            JOptionPane.showMessageDialog(null, "Book not found.");
             return;
         }
 
-        String[] statuses = {"Read", "Want to Read", "Currently Reading", "Owned"};
+        String[] statuses = {"Read", "Want to Read", "Currently Reading"};
         String newStatus = (String) JOptionPane.showInputDialog(null, "Select new status:",
                 "Update Status", JOptionPane.QUESTION_MESSAGE, null, statuses, b.getStatus());
         if (newStatus != null) b.setStatus(newStatus);
@@ -167,7 +207,8 @@ public class LibraryUI {
             }
         }
 
-        textArea.append("✅ Book updated: " + b.getTitle() + "\n");
+        refreshTable();
+        JOptionPane.showMessageDialog(null, "✅ Book updated: " + b.getTitle());
     }
 
     public static void main(String[] args) {
