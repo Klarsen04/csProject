@@ -52,25 +52,71 @@ public class Main {
 
                     switch (typeChoice) {
                         case 1 -> {
-                            System.out.print("Enter format (PDF/EPUB/MOBI): ");
-                            String format = sc.nextLine().trim();
-                            System.out.print("Enter download link: ");
-                            String link = sc.nextLine().trim();
+                            String format = "";
+                            boolean validFormat = false;
+                            while (!validFormat) {
+                                System.out.print("Enter format (PDF/EPUB/MOBI): ");
+                                format = sc.nextLine().trim().toUpperCase();
+                                try {
+                                    if (format.equals("PDF") || format.equals("EPUB") || format.equals("MOBI")) {
+                                        validFormat = true;
+                                    } else {
+                                        throw new IllegalArgumentException("Invalid format. Must be PDF, EPUB, or MOBI.");
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println(e.getMessage());
+                                }
+                            }
+
+                            String link = "";
+                            boolean validLink = false;
+                            while (!validLink) {
+                                System.out.print("Enter download link: ");
+                                link = sc.nextLine().trim();
+                                try {
+                                    java.net.URL url = new java.net.URL(link);  // checks if it's a valid URL
+                                    url.toURI(); // further validation
+                                    validLink = true;
+                                } catch (Exception e) {
+                                    System.out.println("Invalid link. Please enter a valid URL (e.g., https://example.com).");
+                                }
+                            }
+
                             newBook = new Ebook(title, author, format, link);
                         }
                         case 2 -> {
-                            System.out.print("Enter page count: ");
-                            int pages = 0;
-                            try {
-                                pages = Integer.parseInt(sc.nextLine());
-                            } catch (NumberFormatException e) {
-                                System.out.println("Invalid number. Defaulting to 0 pages.");
+                            int pages = -1;
+                            while (pages < 0) {
+                                System.out.print("Enter page count: ");
+                                String input = sc.nextLine().trim();
+                                try {
+                                    pages = Integer.parseInt(input);
+                                    if (pages < 0) {
+                                        System.out.println("Page count cannot be negative. Try again.");
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.out.println("Invalid number. Please enter a valid integer.");
+                                }
                             }
 
-                            System.out.print("Do you own this book? (yes/no): ");
-                            boolean owned = sc.nextLine().trim().equalsIgnoreCase("yes");
+                            boolean owned = false;
+                            while (true) {
+                                System.out.print("Do you own this book? (yes/no): ");
+                                String ownedInput = sc.nextLine().trim().toLowerCase();
+                                if (ownedInput.equals("yes")) {
+                                    owned = true;
+                                    break;
+                                } else if (ownedInput.equals("no")) {
+                                    owned = false;
+                                    break;
+                                } else {
+                                    System.out.println("Please answer 'yes' or 'no'.");
+                                }
+                            }
+
                             newBook = new HardCopy(title, author, pages, owned);
                         }
+
                         default -> {
                             newBook = new Book(title, author);
                         }

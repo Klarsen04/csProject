@@ -9,6 +9,10 @@ public class Library {
     public void addBook(Book b) {
         books.add(b);
     }
+    public java.util.List<Book> getBooks() {
+        return books;
+    }
+
 
     public Book searchByTitle(String title) {
         for (Book b : books) {
