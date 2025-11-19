@@ -1,1 +1,2 @@
-ahs,sjahs sjahs,Want to Read,0.0,
+BOOK,ajhsd,asads,Read,3.5,Amazing
+EBOOK,Jhajahs,ass,Want to Read,0.0,,PDF,https://shajs.com
