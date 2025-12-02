@@ -67,20 +67,20 @@ public class Library {
                 books.add(b);
             }
 
-            System.out.println("✅ Library loaded from file.");
+            System.out.println(" Library loaded from file.");
 
             // Automatically display what was loaded
             if (books.isEmpty()) {
-                System.out.println("⚠️ No books found in file.");
+                System.out.println(" No books found in file.");
             } else {
-                System.out.println("\n📖 Books currently in library:");
+                System.out.println("\n Books currently in library:");
                 for (Book b : books) {
                     System.out.println(b);
                 }
             }
 
         } catch (IOException e) {
-            System.out.println("⚠️ Error reading file: " + e.getMessage());
+            System.out.println(" Error reading file: " + e.getMessage());
         }
     }
 

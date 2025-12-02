@@ -185,8 +185,8 @@ public class Main {
                     lib.sortAlphabetically();
                     System.out.println("Sorted alphabetically!");
                 }
-                case 6 -> lib.saveToFile("src/books.txt");
-                case 7 -> lib.loadFromFile("src/books.txt");
+                case 6 -> lib.saveToFile("books.txt");
+                case 7 -> lib.loadFromFile("books.txt");
                 case 0 -> System.out.println("Goodbye!");
                 default -> System.out.println("Invalid choice.");
             }
